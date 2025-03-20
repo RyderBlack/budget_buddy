@@ -22,7 +22,7 @@ try:
 
     cursor.execute("CREATE TABLE IF NOT EXISTS user (id INT PRIMARY KEY NOT NULL AUTO_INCREMENT, name VARCHAR(255) NOT NULL, forename VARCHAR(255) NOT NULL, email VARCHAR(255) NOT NULL, password VARCHAR(255) NOT NULL)")
 
-    cursor.execute("CREATE TABLE IF NOT EXISTS bank_account (id INT PRIMARY KEY NOT NULL AUTO_INCREMENT, account_balance DECIMAL NOT NULL, id_user INT, FOREIGN KEY (id_user) REFERENCES user(id))")
+    cursor.execute("CREATE TABLE IF NOT EXISTS bank_account (id INT PRIMARY KEY NOT NULL AUTO_INCREMENT, account_balance DECIMAL NOT NULL, id_user INT, FOREIGN KEY (id_user) REFERENCES user(id), account_name VARCHAR(255))")
 
     cursor.execute("""
     CREATE TABLE IF NOT EXISTS bank_transaction (
