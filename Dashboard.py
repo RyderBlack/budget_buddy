@@ -4,10 +4,8 @@ from dotenv import load_dotenv
 from pathlib import Path
 from tkinter import Tk, Canvas, Label, PhotoImage
 import sys
-import tkinter as tk
 
-
-# Récupérer l'ID du compte via les arguments de la ligne de commande
+# Charger l'ID du compte via les arguments de la ligne de commande
 if len(sys.argv) > 1:
     account_id = sys.argv[1]  # L'ID du compte transmis en argument
     print(f"Dashboard ouvert pour l'ID du compte : {account_id}")
@@ -112,8 +110,6 @@ canvas.create_rectangle(
     76.0, 228.0, 556.0, 230.0, fill="#262626", outline=""
 )
 
-register_button = tk.Button(root, text="Register", command=register)
-register_button.pack()
 # Étiquette affichant le solde du compte
 entry_1 = Label(
     window,
