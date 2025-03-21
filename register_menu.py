@@ -64,6 +64,7 @@ def register():
         db.commit()
         messagebox.showinfo("Success", "You have successfully registered!")
 
+
 root = tk.Tk()
 style = Style(theme="superhero")
 root.title("Registration Form")
