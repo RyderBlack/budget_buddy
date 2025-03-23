@@ -1,25 +1,12 @@
-# import customtkinter as ctk
-
-# class AccountPage(ctk.CTkFrame):
-#     def __init__(self, master):
-#         super().__init__(master)
-#         self.master = master
-#         self.create_widgets()
-    
-#     def create_widgets(self):
-#         ctk.CTkLabel(self, text="Bienvenue sur votre espace !").pack()
-#         ctk.CTkButton(self, text="Ajouter un compte", command=self.master.show_dashboard).pack()
-#         ctk.CTkButton(self, text="Accéder aux comptes", command=self.master.show_dashboard).pack()
-
-
 import customtkinter as ctk
 from pathlib import Path
 from tkinter import Canvas, Button, PhotoImage
 
 class AccountPage(ctk.CTkFrame):
-    def __init__(self, master):
+    def __init__(self, master, user_id):
         super().__init__(master, width=1280, height=720)
         self.master = master
+        self.user_id = user_id
         self.assets_path = Path("./assets/account_assets")
         self.create_widgets()
 
@@ -38,7 +25,7 @@ class AccountPage(ctk.CTkFrame):
         )
         self.canvas.place(x=0, y=0)
 
-        # Images de fond
+        # Background
         self.image_image_1 = PhotoImage(file=self.relative_to_assets("image_1.png"))
         self.canvas.create_image(640.0, 360.0, image=self.image_image_1)
 
@@ -80,13 +67,11 @@ class AccountPage(ctk.CTkFrame):
         self.button_2.place(x=693.0, y=310.0, width=286.0, height=82.0)
 
     def on_button_1(self):
-        # Ici pour l'instant, on redirige vers le dashboard futur
         print("Bouton 1 (Créer un compte bancaire) cliqué")
         if hasattr(self.master, "show_dashboard"):
-            self.master.show_dashboard()
+            self.master.show_dashboard(self.user_id)
 
     def on_button_2(self):
-        # Ici pour l'instant, on redirige vers le dashboard futur
         print("Bouton 2 (Accéder au(x) compte(s)) cliqué")
         if hasattr(self.master, "show_dashboard"):
-            self.master.show_dashboard()
+            self.master.show_dashboard(self.user_id)

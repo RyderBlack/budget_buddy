@@ -7,7 +7,6 @@ import os
 from passlib.hash import bcrypt
 import re
 
-# Charger les variables d'environnement
 load_dotenv(".env")
 DATABASE_PASSWORD = os.getenv("DATABASE_PASSWORD")
 
@@ -20,18 +19,15 @@ class LoginPage(ctk.CTkFrame):
         self.master = master
         self.pack(fill="both", expand=True)
         
-        # Définir le chemin des assets
         self.OUTPUT_PATH = Path(__file__).parent
         self.ASSETS_PATH = self.OUTPUT_PATH / Path(r"./assets/login_assets")
-        
-        # Initialiser l'interface
+
         self.create_widgets()
         
     def relative_to_assets(self, path: str) -> Path:
         return self.ASSETS_PATH / Path(path)
     
     def create_widgets(self):
-        # Créer le canvas principal
         self.canvas = Canvas(
             self,
             bg="#FFFFFF",
@@ -188,8 +184,6 @@ class LoginPage(ctk.CTkFrame):
                 database="budget_buddy"
             )
             cursor = db.cursor()
-            
-            # Requête pour vérifier les identifiants
             cursor.execute("SELECT * FROM user WHERE email = %s", (email,))
             account = cursor.fetchone()
             
@@ -203,8 +197,8 @@ class LoginPage(ctk.CTkFrame):
                 "email": account[3]
                 }
                 
-                # Rediriger vers la page principale après connexion
-                self.master.show_account_page()
+                self.master.show_account_page(account[0])
+                
             else:
                 messagebox.showerror("Erreur", "Identifiants incorrects !")
             
@@ -242,7 +236,7 @@ class LoginPage(ctk.CTkFrame):
         self.canvas.itemconfig(self.forgot_password_text_id, fill="#FFFFFF")
 
 
-# # Exemple d'utilisation de la classe LoginPage
+
 # if __name__ == "__main__":
 #     # Créer une fenêtre principale
 #     class App(Tk):

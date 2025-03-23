@@ -36,15 +36,16 @@ class App(tk.Tk):
         self.page = RegisterPage(self)
         self.page.pack(fill="both", expand=True)
     
-    def show_account_page(self):
+    def show_account_page(self, user_id):
         self.clear_window()
-        self.page = AccountPage(self)
+        self.page = AccountPage(self, user_id)
         self.page.pack(fill="both", expand=True)
-    
-    def show_dashboard(self):
+
+    def show_dashboard(self, user_id):
         self.clear_window()
-        self.page = Dashboard(self)
+        self.page = Dashboard(self, user_id)
         self.page.pack(fill="both", expand=True)
+
     
     def clear_window(self):
         for widget in self.winfo_children():
