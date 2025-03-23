@@ -1,6 +1,12 @@
 import customtkinter as ctk
 from pathlib import Path
-from tkinter import Canvas, Button, PhotoImage
+from tkinter import Canvas, Button, PhotoImage, messagebox, simpledialog
+import mysql.connector
+import os
+from dotenv import load_dotenv
+
+load_dotenv(".env")
+DATABASE_PASSWORD = os.getenv("DATABASE_PASSWORD")
 
 class AccountPage(ctk.CTkFrame):
     def __init__(self, master, user_id):
@@ -49,8 +55,9 @@ class AccountPage(ctk.CTkFrame):
             image=self.button_image_1,
             borderwidth=0,
             highlightthickness=0,
-            command=self.on_button_1,
-            relief="flat"
+            command=self.create_bank_account,
+            relief="flat",
+            cursor="hand2"
         )
         self.button_1.place(x=298.0, y=308.0, width=289.0, height=85.0)
 
@@ -61,17 +68,49 @@ class AccountPage(ctk.CTkFrame):
             image=self.button_image_2,
             borderwidth=0,
             highlightthickness=0,
-            command=self.on_button_2,
-            relief="flat"
+            command=self.access_bank_accounts,
+            relief="flat",
+            cursor="hand2"
         )
         self.button_2.place(x=693.0, y=310.0, width=286.0, height=82.0)
-
-    def on_button_1(self):
-        print("Bouton 1 (Créer un compte bancaire) cliqué")
-        if hasattr(self.master, "show_dashboard"):
-            self.master.show_dashboard(self.user_id)
-
-    def on_button_2(self):
-        print("Bouton 2 (Accéder au(x) compte(s)) cliqué")
+            
+    # Create/Access Bank Account Logic  
+    def create_bank_account(self):
+        """
+        Cette méthode crée un compte bancaire pour l'utilisateur connecté
+        avec un solde initial spécifié par l'utilisateur.
+        """
+        # Demander le solde initial à l'utilisateur
+        initial_balance = simpledialog.askfloat("Solde initial", "Entrez le solde initial du compte:", 
+                                               minvalue=0, initialvalue=0)
+        
+        if initial_balance is None:  # L'utilisateur a annulé
+            return
+            
+        try:
+            db = mysql.connector.connect(
+                host="localhost",
+                user="root",
+                password=DATABASE_PASSWORD,
+                database="budget_buddy"
+            )
+            cursor = db.cursor()
+            # Insertion d'un nouveau compte bancaire avec le solde initial spécifié
+            query = "INSERT INTO bank_account (account_balance, id_user) VALUES (%s, %s)"
+            cursor.execute(query, (initial_balance, self.user_id))
+            db.commit()
+            messagebox.showinfo("Succès", f"Compte bancaire créé avec succès avec un solde initial de {initial_balance}€ !")
+            
+            cursor.close()
+            db.close()
+            
+            # Rediriger vers le dashboard pour voir le nouveau compte
+            self.access_bank_accounts()
+            
+        except mysql.connector.Error as err:
+            messagebox.showerror("Erreur", f"Erreur lors de la création du compte bancaire: {err}")
+        
+    def access_bank_accounts(self):
+        # Redirige vers le dashboard
         if hasattr(self.master, "show_dashboard"):
             self.master.show_dashboard(self.user_id)

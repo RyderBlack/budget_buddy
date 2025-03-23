@@ -10,17 +10,14 @@ DATABASE_PASSWORD = os.getenv("DATABASE_PASSWORD")
 
 class Dashboard(ctk.CTkFrame):
     def __init__(self, master, user_id):
-        """
-        :param master: La fenêtre principale
-        :param user_id: L'identifiant de l'utilisateur connecté
-        """
-        super().__init__(master, width=1280, height=720)
+        super().__init__(master, fg_color="#FFFFFF")
         self.master = master
-        self.user_id = user_id
-        # Chemin des assets pour le dashboard
+        self.user_id = user_id  
         self.assets_path = Path("./assets/dashboard_assets")
+        self.selected_account_id = None
         self.create_widgets()
-        self.pack(fill="both", expand=True)
+        self.load_user_data()
+        self.refresh_accounts_list()
         
     def relative_to_assets(self, path: str) -> Path:
         return self.assets_path / Path(path)
@@ -38,7 +35,7 @@ class Dashboard(ctk.CTkFrame):
         )
         self.canvas.place(x=0, y=0)
         
-        # Image de fond
+        # Background Image
         self.image_image_1 = PhotoImage(file=self.relative_to_assets("image_1.png"))
         self.canvas.create_image(640.0, 360.0, image=self.image_image_1)
         
