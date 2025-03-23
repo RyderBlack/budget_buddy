@@ -51,6 +51,12 @@ class App(tk.Tk):
         self.clear_window()
         self.page = DashboardCharts(self, user_id)
         self.page.pack(fill="both", expand=True)
+        
+    def show_dashboard_transactions(self, user_id):
+        self.clear_window()
+        from DashboardTransactions import DashboardTransactions
+        self.page = DashboardTransactions(self, user_id)
+        self.page.pack(fill="both", expand=True)
     
     def clear_window(self):
         for widget in self.winfo_children():

@@ -128,7 +128,7 @@ class DashboardCharts(ctk.CTkFrame):
             image=self.button_transactions_image,
             borderwidth=0,
             highlightthickness=0,
-            command= lambda: print("transaction button clicked"),
+            command= self.on_transactions,
             relief="flat",
             cursor="hand2"
         )
@@ -377,7 +377,7 @@ class DashboardCharts(ctk.CTkFrame):
             for widget in self.winfo_children():
                 if isinstance(widget, Frame) and widget != self.accounts_frame:
                     widget.destroy()
-# =========================================================
+
             # Charts FRAME
             charts_frame = Frame(self, bg="#14171F")
             charts_frame.place(x=160, y=210, width=750, height=470)
@@ -424,6 +424,11 @@ class DashboardCharts(ctk.CTkFrame):
         """Redirige vers la vue principale (Dashboard)."""
         if hasattr(self.master, "show_dashboard"):
             self.master.show_dashboard(self.user_id)
+            
+    def on_transactions(self):
+        if hasattr(self.master, "show_dashboard_transactions"):
+            self.master.show_dashboard_transactions(self.user_id)
+            
 
     def on_logout(self):
         """Déconnecte l'utilisateur et retourne à la page de connexion."""

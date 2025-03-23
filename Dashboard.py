@@ -420,11 +420,12 @@ class Dashboard(ctk.CTkFrame):
         self.load_user_data()
 
     def on_charts(self):
-        """Affiche la page des graphiques (à implémenter)"""
+        if hasattr(self.master, "show_dashboard_charts"):
+            self.master.show_dashboard_charts(self.user_id)
 
     def on_transactions(self):
-        print("Bouton Transactions cliqué")
-        # Action ultérieure
+        if hasattr(self.master, "show_dashboard_transactions"):
+            self.master.show_dashboard_transactions(self.user_id)
 
     def on_logout(self):
         print("Bouton Logout cliqué")
