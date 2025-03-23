@@ -10,6 +10,7 @@ from LoginPage import LoginPage
 from RegisterPage import RegisterPage
 from AccountPage import AccountPage
 from Dashboard import Dashboard
+from DashboardCharts import DashboardCharts
 
 
 load_dotenv(".env")
@@ -46,6 +47,10 @@ class App(tk.Tk):
         self.page = Dashboard(self, user_id)
         self.page.pack(fill="both", expand=True)
 
+    def show_dashboard_charts(self, user_id):
+        self.clear_window()
+        self.page = DashboardCharts(self, user_id)
+        self.page.pack(fill="both", expand=True)
     
     def clear_window(self):
         for widget in self.winfo_children():
