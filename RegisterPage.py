@@ -228,8 +228,8 @@ class RegisterPage(ctk.CTkFrame):
             )
             db.commit()
             messagebox.showinfo("Succès", "Compte créé avec succès !")
-            if hasattr(self.master, "show_login_page"):
-                self.master.show_login_page()
+            if hasattr(self.master, "show_account_page"):
+                self.master.show_account_page()
         except mysql.connector.Error as err:
             messagebox.showerror("Erreur", f"Erreur lors de l'inscription: {err}")
         

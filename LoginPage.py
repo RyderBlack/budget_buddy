@@ -195,8 +195,16 @@ class LoginPage(ctk.CTkFrame):
             
             if account and bcrypt.verify(password, account[4]):
                 messagebox.showinfo("Succès", "Connexion réussie !")
+                
+                self.master.current_user = {
+                "id": account[0],
+                "nom": account[1],
+                "prenom": account[2],
+                "email": account[3]
+                }
+                
                 # Rediriger vers la page principale après connexion
-                self.master.show_account_page(account[0])  # Passer l'ID utilisateur
+                self.master.show_account_page()
             else:
                 messagebox.showerror("Erreur", "Identifiants incorrects !")
             

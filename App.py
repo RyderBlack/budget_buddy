@@ -11,6 +11,7 @@ from RegisterPage import RegisterPage
 from AccountPage import AccountPage
 from Dashboard import Dashboard
 
+
 load_dotenv(".env")
 DATABASE_PASSWORD = os.getenv("DATABASE_PASSWORD")
 
