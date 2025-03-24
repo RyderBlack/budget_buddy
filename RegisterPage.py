@@ -13,6 +13,9 @@ DATABASE_PASSWORD = os.getenv("DATABASE_PASSWORD")
 def validate_email(email):
     return bool(re.match(r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$", email))
 
+def validate_password(password):
+    return bool(re.match(r"^(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*(),.?\":{}|<>])[A-Za-z\d!@#$%^&*(),.?\":{}|<>]{10,}$", password))
+
 class RegisterPage(ctk.CTkFrame):
     def __init__(self, master):
         super().__init__(master)
@@ -209,6 +212,10 @@ class RegisterPage(ctk.CTkFrame):
         
         if not validate_email(email):
             messagebox.showerror("Erreur", "Format email invalide !")
+            return
+        
+        if not validate_password(password):
+            messagebox.showerror("Erreur, Votre mot de passe doit contenir Une majuscule, un chiffre, un caractére spécial et minimum 10 caractéres")
             return
         
         hashed_password = bcrypt.hash(password)
