@@ -227,9 +227,10 @@ class RegisterPage(ctk.CTkFrame):
                 (nom, prenom, email, hashed_password)
             )
             db.commit()
+            user_id = cursor.lastrowid
             messagebox.showinfo("Succès", "Compte créé avec succès !")
             if hasattr(self.master, "show_account_page"):
-                self.master.show_account_page()
+                self.master.show_account_page(user_id)
         except mysql.connector.Error as err:
             messagebox.showerror("Erreur", f"Erreur lors de l'inscription: {err}")
         
