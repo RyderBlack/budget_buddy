@@ -27,7 +27,6 @@ class Dashboard(ctk.CTkFrame):
         return self.assets_path / Path(path)
         
     def create_widgets(self):
-        # Création du canvas principal
         self.canvas = Canvas(
             self,
             bg="#FFFFFF",
@@ -91,7 +90,6 @@ class Dashboard(ctk.CTkFrame):
             font=("Inter SemiBold", -32)
         )
         
-        # Affichage du solde en grand
         self.balance_amount_id = self.canvas.create_text(
             900.0,
             200.0,
@@ -184,28 +182,23 @@ class Dashboard(ctk.CTkFrame):
             )
             cursor = db.cursor(dictionary=True)
             
-            # Récupérer les informations de l'utilisateur
             cursor.execute("SELECT * FROM user WHERE id = %s", (self.user_id,))
             user_data = cursor.fetchone()
             
-            # Récupérer les comptes bancaires associés à l'utilisateur
             cursor.execute("SELECT * FROM bank_account WHERE id_user = %s", (self.user_id,))
             accounts = cursor.fetchall()
             
             cursor.close()
             db.close()
             
-            # Mettre à jour le texte de salutation
             if user_data:
                 greeting = f"Bonjour, {user_data['name']} {user_data['forename']}"
                 self.canvas.itemconfig(self.greeting_text_id, text=greeting)
             
-            # Sélectionner le premier compte par défaut s'il existe
             if accounts:
                 self.selected_account_id = accounts[0]['id']
                 self.update_account_display(self.selected_account_id)
             
-            # Rafraîchir la liste des comptes
             self.refresh_accounts_list()
             
         except mysql.connector.Error as err:
@@ -214,7 +207,6 @@ class Dashboard(ctk.CTkFrame):
 
     def refresh_accounts_list(self):
         """Rafraîchit la liste des comptes bancaires de l'utilisateur avec défilement"""
-        # Effacer les widgets existants dans le cadre des comptes
         for widget in self.accounts_frame.winfo_children():
             widget.destroy()
         
@@ -227,12 +219,10 @@ class Dashboard(ctk.CTkFrame):
             )
             cursor = db.cursor(dictionary=True)
             
-            # Récupérer les comptes bancaires de l'utilisateur
             cursor.execute("SELECT id, account_balance FROM bank_account WHERE id_user = %s", (self.user_id,))
             accounts = cursor.fetchall()
             
             if not accounts:
-                # 'Aucun compte trouvé'
                 no_accounts_label = Label(
                     self.accounts_frame,
                     text="Aucun compte bancaire trouvé",
@@ -246,29 +236,23 @@ class Dashboard(ctk.CTkFrame):
                 canvas = Canvas(self.accounts_frame, bg="#14171F", bd=0, highlightthickness=0)
                 scrollbar = Scrollbar(self.accounts_frame, orient="vertical", command=canvas.yview)
                 
-                # Créer un cadre à l'intérieur du canvas qui contiendra les comptes
                 scrollable_frame = Frame(canvas, bg="#14171F")
                 
-                # Configurer le cadre défilant pour qu'il s'adapte au canvas
                 scrollable_frame.bind(
                     "<Configure>",
                     lambda e: canvas.configure(scrollregion=canvas.bbox("all"))
                 )
                 
-                # Créer une fenêtre dans le canvas pour y placer le cadre défilant
                 canvas.create_window((0, 0), window=scrollable_frame, anchor="nw")
                 canvas.configure(yscrollcommand=scrollbar.set)
                 
-                # Placer le canvas et la barre de défilement
                 canvas.pack(side="left", fill="both", expand=True)
                 scrollbar.pack(side="right", fill="y")
                 scrollable_frame.configure(width=280)
-                # Afficher chaque compte dans le cadre défilant
                 for account in accounts:
                     account_frame = Frame(scrollable_frame, bg="#1E212B", bd=1, relief="solid")
                     account_frame.pack(fill="x", padx=80, pady=5)
                     
-                    # Numéro de compte
                     account_label = Label(
                         account_frame,
                         text=f"Compte #{account['id']}",
@@ -278,7 +262,6 @@ class Dashboard(ctk.CTkFrame):
                     )
                     account_label.pack(anchor="w", padx=5, pady=(5, 0))
                     
-                    # Solde
                     balance_label = Label(
                         account_frame,
                         text=f"Solde: {float(account['account_balance']):.2f} €",
@@ -288,7 +271,6 @@ class Dashboard(ctk.CTkFrame):
                     )
                     balance_label.pack(anchor="w", padx=5, pady=(0, 5))
                     
-                    # Bouton pour sélectionner ce compte
                     select_button = Button(
                         account_frame,
                         text="Sélectionner",
@@ -301,7 +283,6 @@ class Dashboard(ctk.CTkFrame):
                     )
                     select_button.pack(anchor="e", padx=5, pady=5)
                 
-                # Permettre le défilement avec la molette de la souris
                 canvas.bind_all("<MouseWheel>", lambda event: canvas.yview_scroll(int(-1*(event.delta/120)), "units"))
             
             cursor.close()
@@ -319,12 +300,11 @@ class Dashboard(ctk.CTkFrame):
             error_label.pack(pady=20)
     
     def select_account(self, account_id):
-        """Sélectionne un compte bancaire et met à jour l'affichage"""
+        
         self.selected_account_id = account_id
         self.update_account_display(account_id)
     
     def update_account_display(self, account_id):
-        """Met à jour l'affichage des informations du compte sélectionné"""
         try:
             db = mysql.connector.connect(
                 host="localhost",
@@ -334,16 +314,13 @@ class Dashboard(ctk.CTkFrame):
             )
             cursor = db.cursor(dictionary=True)
             
-            # Récupérer les informations du compte
             cursor.execute("SELECT * FROM bank_account WHERE id = %s", (account_id,))
             account = cursor.fetchone()
             
             if account:
-                # Mettre à jour le texte du solde
                 self.canvas.itemconfig(self.balance_text_id, text=f"Solde du Compte #{account_id}")
                 self.canvas.itemconfig(self.balance_amount_id, text=f"{float(account['account_balance']):.2f}€")
                 
-                # Récupérer les transactions de ce compte
                 cursor.execute(
                     """SELECT * FROM bank_transaction 
                        WHERE id_bank_account = %s 
@@ -352,7 +329,6 @@ class Dashboard(ctk.CTkFrame):
                 )
                 transactions = cursor.fetchall()
                 
-                # Mettre à jour l'affichage des transactions
                 self.refresh_transactions_display(transactions)
             
             cursor.close()
@@ -362,13 +338,10 @@ class Dashboard(ctk.CTkFrame):
             print(f"Erreur lors de la mise à jour de l'affichage du compte: {err}")
     
     def refresh_transactions_display(self, transactions):
-        """Met à jour l'affichage des transactions"""
-        # Effacer les widgets existants dans le cadre des transactions
         for widget in self.transactions_frame.winfo_children():
             widget.destroy()
         
         if not transactions:
-            # Aucune transaction trouvée
             no_tx_label = Label(
                 self.transactions_frame,
                 text="Aucune transaction pour ce compte",
@@ -378,7 +351,6 @@ class Dashboard(ctk.CTkFrame):
             )
             no_tx_label.pack(pady=20)
         else:
-            # Créer un widget de texte scrollable pour les transactions
             tx_text = scrolledtext.ScrolledText(
                 self.transactions_frame,
                 width=48,
@@ -390,13 +362,11 @@ class Dashboard(ctk.CTkFrame):
             )
             tx_text.pack(fill="both", expand=True)
             
-            # Ajouter chaque transaction au widget de texte
             for tx in transactions:
                 date_str = tx['date'].strftime('%Y-%m-%d %H:%M') if hasattr(tx['date'], 'strftime') else str(tx['date'])
                 tx_type = tx['transaction_type']
                 amount = float(tx['amount'])
                 
-                # Formater le texte de la transaction
                 if tx_type == "debit":
                     tx_text.insert("end", f"{date_str} - {tx['reference']}\n", "date")
                     tx_text.insert("end", f"{tx['description']}\n", "desc")
@@ -406,13 +376,11 @@ class Dashboard(ctk.CTkFrame):
                     tx_text.insert("end", f"{tx['description']}\n", "desc")
                     tx_text.insert("end", f"+{amount:.2f} €\n\n", "credit")
             
-            # Configurer les tags pour la coloration
             tx_text.tag_configure("date", foreground="#555555")
             tx_text.tag_configure("desc", foreground="#333333")
             tx_text.tag_configure("debit", foreground="#FF5555")
             tx_text.tag_configure("credit", foreground="#55AA55")
             
-            # Mettre en lecture seule
             tx_text.config(state="disabled")
 
     def on_home(self):

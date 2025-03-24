@@ -24,7 +24,6 @@ class DashboardCharts(ctk.CTkFrame):
         return self.assets_path / Path(path)
 
     def create_widgets(self):
-        # Création du canvas principal
         self.canvas = Canvas(
             self,
             bg="#FFFFFF",
@@ -40,17 +39,8 @@ class DashboardCharts(ctk.CTkFrame):
         self.image_image_1 = PhotoImage(file=self.relative_to_assets("image_1.png"))
         self.canvas.create_image(640.0, 360.0, image=self.image_image_1)
         
-        # # Texte "Solde du Compte"
-        # self.balance_text_id = self.canvas.create_text(
-        #     625.0,
-        #     132.5,
-        #     anchor="nw",
-        #     text="Solde du Compte :  0.00 €",
-        #     fill="#FFFFFF",
-        #     font=("Inter SemiBold", 32 * -1)
-        # )
-        
-        # Texte "Solde du Compte"
+       
+        # Text "Solde du Compte"
         self.balance_text_id = self.canvas.create_text(
             400.0,  
             132.5,
@@ -60,9 +50,8 @@ class DashboardCharts(ctk.CTkFrame):
             font=("Inter SemiBold", 32 * -1)
         )
 
-        # Ajoutez un texte séparé pour le montant du solde
         self.balance_amount_id = self.canvas.create_text(
-            1100.0,  # Centré horizontalement
+            1100.0,  
             125,
             anchor="n",
             text="0.00 €",
@@ -71,7 +60,7 @@ class DashboardCharts(ctk.CTkFrame):
         )
 
 
-        # Texte "Sélectionner un compte"
+        # Text "Sélectionner un compte"
         self.canvas.create_text(
             960.0,
             210.0,
@@ -85,7 +74,7 @@ class DashboardCharts(ctk.CTkFrame):
         self.accounts_frame = Frame(self, bg="#14171F")
         self.accounts_frame.place(x=960, y=250, width=250, height=425)
 
-        # Bouton Home
+        # Buton Home
         self.button_home_image = PhotoImage(file=self.relative_to_assets("button_1.png"))
         self.button_home = Button(
             self,
@@ -103,7 +92,7 @@ class DashboardCharts(ctk.CTkFrame):
             height=56.0
         )
 
-        # Bouton Charts
+        # Buton Charts
         self.button_charts_image = PhotoImage(file=self.relative_to_assets("button_2.png"))
         self.button_charts = Button(
             self,
@@ -139,7 +128,7 @@ class DashboardCharts(ctk.CTkFrame):
             height=65.0
         )
 
-        # Bouton Logout
+        # Buton Logout
         self.button_logout_image = PhotoImage(file=self.relative_to_assets("button_4.png"))
         self.button_logout = Button(
             self,
@@ -158,7 +147,6 @@ class DashboardCharts(ctk.CTkFrame):
         )
 
     def load_user_data(self):
-        """Charge les données de l'utilisateur et affiche le premier compte par défaut."""
         try:
             db = mysql.connector.connect(
                 host="localhost",
@@ -168,7 +156,6 @@ class DashboardCharts(ctk.CTkFrame):
             )
             cursor = db.cursor(dictionary=True)
 
-            # Récupérer les comptes bancaires de l'utilisateur
             cursor.execute("SELECT id, account_balance FROM bank_account WHERE id_user = %s", (self.user_id,))
             accounts = cursor.fetchall()
 
@@ -179,7 +166,6 @@ class DashboardCharts(ctk.CTkFrame):
                 self.selected_account_id = accounts[0]['id']
                 self.update_account_display(accounts[0]['account_balance'])
 
-            # Rafraîchir la liste des comptes
             self.refresh_accounts_list()
 
         except mysql.connector.Error as err:
@@ -187,7 +173,6 @@ class DashboardCharts(ctk.CTkFrame):
             messagebox.showerror("Erreur", f"Impossible de charger les comptes: {err}")
 
     def refresh_accounts_list(self):
-        """Rafraîchit la liste des comptes bancaires de l'utilisateur avec défilement."""
         for widget in self.accounts_frame.winfo_children():
             widget.destroy()
 
@@ -200,7 +185,6 @@ class DashboardCharts(ctk.CTkFrame):
             )
             cursor = db.cursor(dictionary=True)
 
-            # Récupérer les comptes bancaires de l'utilisateur
             cursor.execute("SELECT id, account_balance FROM bank_account WHERE id_user = %s", (self.user_id,))
             accounts = cursor.fetchall()
 
@@ -214,33 +198,26 @@ class DashboardCharts(ctk.CTkFrame):
                 )
                 no_accounts_label.pack(pady=20)
             else:
-                # Créer un canvas pour le défilement
                 canvas = Canvas(self.accounts_frame, bg="#14171F", bd=0, highlightthickness=0)
                 scrollbar = Scrollbar(self.accounts_frame, orient="vertical", command=canvas.yview)
 
-                # Créer un cadre à l'intérieur du canvas qui contiendra les comptes
                 scrollable_frame = Frame(canvas, bg="#14171F")
 
-                # Configurer le cadre défilant pour qu'il s'adapte au canvas
                 scrollable_frame.bind(
                     "<Configure>",
                     lambda e: canvas.configure(scrollregion=canvas.bbox("all"))
                 )
 
-                # Créer une fenêtre dans le canvas pour y placer le cadre défilant
                 canvas.create_window((0, 0), window=scrollable_frame, anchor="nw")
                 canvas.configure(yscrollcommand=scrollbar.set)
 
-                # Placer le canvas et la barre de défilement
                 canvas.pack(side="left", fill="both", expand=True)
                 scrollbar.pack(side="right", fill="y")
 
-                # Afficher chaque compte dans le cadre défilant
                 for account in accounts:
                     account_frame = Frame(scrollable_frame, bg="#1E212B", bd=1, relief="solid")
                     account_frame.pack(fill="x", padx=60, pady=5)
 
-                    # Numéro de compte
                     account_label = Label(
                         account_frame,
                         text=f"Compte #{account['id']}",
@@ -250,7 +227,6 @@ class DashboardCharts(ctk.CTkFrame):
                     )
                     account_label.pack(anchor="w", padx=5, pady=(5, 0))
 
-                    # Solde
                     balance_label = Label(
                         account_frame,
                         text=f"Solde: {float(account['account_balance']):.2f} €",
@@ -260,7 +236,6 @@ class DashboardCharts(ctk.CTkFrame):
                     )
                     balance_label.pack(anchor="w", padx=5, pady=(0, 5))
 
-                    # Bouton pour sélectionner ce compte
                     select_button = Button(
                         account_frame,
                         text="Sélectionner",
@@ -273,7 +248,6 @@ class DashboardCharts(ctk.CTkFrame):
                     )
                     select_button.pack(anchor="e", padx=5, pady=5)
 
-                # Permettre le défilement avec la molette de la souris
                 canvas.bind_all("<MouseWheel>", lambda event: canvas.yview_scroll(int(-1 * (event.delta / 120)), "units"))
 
             cursor.close()
@@ -291,20 +265,13 @@ class DashboardCharts(ctk.CTkFrame):
             error_label.pack(pady=20)
 
     def select_account(self, account_id, account_balance):
-        """Sélectionne un compte bancaire et met à jour l'affichage."""
         self.selected_account_id = account_id
         self.update_account_display(account_balance)      
 
-    # def update_account_display(self, account_balance):
-    #     """Met à jour l'affichage du solde du compte sélectionné."""
-    #     balance_text = f"Solde du Compte : {float(account_balance):.2f}€"
-    #     self.canvas.itemconfig(self.balance_text_id, text=balance_text)
-    #     self.display_charts()
         
         
         
     def update_account_display(self, account_balance):
-        """Met à jour l'affichage du solde du compte sélectionné."""
         try:
             db = mysql.connector.connect(
                 host="localhost",
@@ -314,29 +281,24 @@ class DashboardCharts(ctk.CTkFrame):
             )
             cursor = db.cursor(dictionary=True)
 
-            # Récupérer les détails du compte sélectionné
             cursor.execute("SELECT id FROM bank_account WHERE id = %s", (self.selected_account_id,))
             account = cursor.fetchone()
 
             if account:
-                # Mettre à jour le texte du compte
                 balance_text = f"Solde du Compte #{account['id']}"
                 self.canvas.itemconfig(self.balance_text_id, text=balance_text)
                 
-                # Mettre à jour le montant du solde séparément
                 self.canvas.itemconfig(self.balance_amount_id, text=f"{float(account_balance):.2f} €")
 
             cursor.close()
             db.close()
 
-            # Afficher les graphiques après la mise à jour du solde
             self.display_charts()
 
         except mysql.connector.Error as err:
             print(f"Erreur lors de la mise à jour des informations du compte: {err}")
 
     def display_charts(self):
-        """Charge et affiche les graphiques pour le compte sélectionné."""
         if self.selected_account_id is None:
             messagebox.showerror("Erreur", "Veuillez sélectionner un compte bancaire.")
             return
@@ -350,7 +312,6 @@ class DashboardCharts(ctk.CTkFrame):
             )
             cursor = db.cursor(dictionary=True)
 
-            # Récupérer les transactions par catégorie pour le compte sélectionné
             cursor.execute("""
                 SELECT c.category_type, SUM(bt.amount) AS total_amount
                 FROM bank_transaction bt
@@ -360,7 +321,6 @@ class DashboardCharts(ctk.CTkFrame):
             """, (self.selected_account_id,))
             categories = cursor.fetchall()
 
-            # Récupérer les dépenses mensuelles pour le compte sélectionné
             cursor.execute("""
                 SELECT DATE_FORMAT(bt.date, '%Y-%m') AS month, SUM(bt.amount) AS total_expense
                 FROM bank_transaction bt
@@ -373,7 +333,6 @@ class DashboardCharts(ctk.CTkFrame):
             cursor.close()
             db.close()
 
-            # Nettoyer l'écran des anciens graphiques
             for widget in self.winfo_children():
                 if isinstance(widget, Frame) and widget != self.accounts_frame:
                     widget.destroy()
@@ -382,7 +341,6 @@ class DashboardCharts(ctk.CTkFrame):
             charts_frame = Frame(self, bg="#14171F")
             charts_frame.place(x=160, y=210, width=750, height=470)
 
-            # Diagramme en camembert pour les catégories de dépenses
             if categories:
                 category_labels = [cat['category_type'] for cat in categories]
                 category_amounts = [float(cat['total_amount']) for cat in categories]
@@ -398,7 +356,6 @@ class DashboardCharts(ctk.CTkFrame):
             else:
                 Label(charts_frame, text="Aucune donnée de dépense disponible.", font=("Inter", 12), fg="#FFFFFF",bg="#14171F").pack(pady=20)
 
-            # Histogramme des dépenses mensuelles
             if monthly_expenses:
                 months = [exp['month'] for exp in monthly_expenses]
                 expenses = [float(exp['total_expense']) for exp in monthly_expenses]
@@ -421,7 +378,6 @@ class DashboardCharts(ctk.CTkFrame):
             messagebox.showerror("Erreur", f"Impossible de charger les données pour les graphiques: {err}")
 
     def on_home(self):
-        """Redirige vers la vue principale (Dashboard)."""
         if hasattr(self.master, "show_dashboard"):
             self.master.show_dashboard(self.user_id)
             

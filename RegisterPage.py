@@ -150,7 +150,6 @@ class RegisterPage(ctk.CTkFrame):
         )
         self.entry_password.pack(fill="both", expand=True)
         
-        # Bouton Login
         self.button_image_1 = PhotoImage(file=self.relative_to_assets("button_1.png"))
         self.button_image_hover_1 = PhotoImage(file=self.relative_to_assets("button_hover_1.png"))
         self.button_register = Button(
@@ -245,15 +244,5 @@ class RegisterPage(ctk.CTkFrame):
         db.close()
 
 
-# if __name__ == "__main__":
-#     ctk.set_appearance_mode("light")
-#     ctk.set_default_color_theme("blue")
-    
-#     window = Tk()
-#     window.geometry("1280x720")
-#     window.configure(bg="#FFFFFF")
-#     window.resizable(False, False)
-    
-#     register_page = RegisterPage(window)
-    
+
 #     window.mainloop()

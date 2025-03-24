@@ -16,8 +16,6 @@ from DashboardCharts import DashboardCharts
 load_dotenv(".env")
 DATABASE_PASSWORD = os.getenv("DATABASE_PASSWORD")
 
-def validate_email(email):
-    return bool(re.match(r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$", email))
 
 class App(tk.Tk):
     def __init__(self):

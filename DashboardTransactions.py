@@ -24,7 +24,6 @@ class DashboardTransactions(ctk.CTkFrame):
         return self.assets_path / Path(path)
 
     def create_widgets(self):
-        # Création du canvas principal
         self.canvas = Canvas(
             self,
             bg="#FFFFFF",
@@ -40,15 +39,7 @@ class DashboardTransactions(ctk.CTkFrame):
         self.image_image_1 = PhotoImage(file=self.relative_to_assets("image_1.png"))
         self.canvas.create_image(640.0, 360.0, image=self.image_image_1)
 
-        # # Text - Account Number
-        # self.account_text_id = self.canvas.create_text(
-        #     156.0,
-        #     159.0,
-        #     anchor="nw",
-        #     text="Compte Actuel: ...",
-        #     fill="#FFFFFF",
-        #     font=("Inter SemiBold", 32 * -1)
-        # )
+ 
         
         self.canvas.create_text(
             156.0,
@@ -60,7 +51,7 @@ class DashboardTransactions(ctk.CTkFrame):
         )
         
         self.account_var = StringVar(self)
-        self.account_var.set("Sélectionner un compte")  # valeur par défaut
+        self.account_var.set("Sélectionner un compte")  
         self.account_dropdown = OptionMenu(
             self,
             self.account_var,
@@ -96,7 +87,6 @@ class DashboardTransactions(ctk.CTkFrame):
             font=("Inter SemiBold", 32 * -1)
         )
         
-        # Affichage du solde en grand
         self.balance_amount_id = self.canvas.create_text(
             900.0,
             170.0,
@@ -232,17 +222,15 @@ class DashboardTransactions(ctk.CTkFrame):
         
         
         
-        # Dans create_widgets(), après avoir créé entry_transfer_to:
         self.entry_transfer_to.insert(0, "Entrez l'ID du compte destinataire")
         self.entry_transfer_to.bind("<FocusIn>", lambda e: self.clear_placeholder(self.entry_transfer_to, "Entrez l'ID du compte destinataire"))
         self.entry_transfer_to.bind("<FocusOut>", lambda e: self.restore_placeholder(self.entry_transfer_to, "Entrez l'ID du compte destinataire"))
 
-        # Créer un texte d'aide supplémentaire
         help_text = Label(
             self,
             text="(Exemple: pour le compte #5, entrez simplement 5)",
             font=("Inter", 10),
-            bg="#14171F",  # Couleur de fond qui correspond à l'arrière-plan
+            bg="#14171F",  
             fg="#AAAAAA"
         )
         help_text.place(x=912.0, y=580.0, width=268.0)
@@ -317,13 +305,11 @@ class DashboardTransactions(ctk.CTkFrame):
         
     
     def clear_placeholder(self, entry, placeholder_text):
-        """Efface le texte d'aide lorsque l'utilisateur clique sur le champ"""
         if entry.get() == placeholder_text:
             entry.delete(0, "end")
             entry.config(fg="#000716")
 
     def restore_placeholder(self, entry, placeholder_text):
-        """Restaure le texte d'aide si le champ est vide"""
         if entry.get() == "":
             entry.insert(0, placeholder_text)
             entry.config(fg="#999999")
@@ -332,14 +318,12 @@ class DashboardTransactions(ctk.CTkFrame):
     
 
     def select_account_from_window(self, account_id, account_balance):
-        """Sélectionne un compte à partir de la fenêtre de sélection."""
         self.selected_account_id = account_id
         self.update_account_display(account_id, account_balance)
         self.account_selection_window.destroy()
         
 
     def load_user_data(self):
-        """Charge les données de l'utilisateur et sélectionne le premier compte par défaut."""
         try:
             db = mysql.connector.connect(
                 host="localhost",
@@ -349,7 +333,6 @@ class DashboardTransactions(ctk.CTkFrame):
             )
             cursor = db.cursor(dictionary=True)
 
-            # Récupérer les comptes bancaires de l'utilisateur
             cursor.execute("SELECT id, account_balance FROM bank_account WHERE id_user = %s", (self.user_id,))
             accounts = cursor.fetchall()
 
@@ -358,7 +341,6 @@ class DashboardTransactions(ctk.CTkFrame):
 
             
             if accounts:
-                # Mettre à jour la liste déroulante avec les comptes disponibles
                 account_menu = self.account_dropdown["menu"]
                 account_menu.delete(0, "end")
                 self.account_options = {}
@@ -373,7 +355,6 @@ class DashboardTransactions(ctk.CTkFrame):
                         command=lambda txt=display_text: self.on_account_selected(txt)
                     )
                 
-                # Sélectionner le premier compte par défaut
                 self.selected_account_id = accounts[0]['id']
                 self.update_account_display(accounts[0]['id'], accounts[0]['account_balance'])
                 first_account_text = list(self.account_options.keys())[0]
@@ -389,17 +370,14 @@ class DashboardTransactions(ctk.CTkFrame):
             messagebox.showerror("Erreur", f"Impossible de charger les comptes: {err}")
 
     def update_account_display(self, account_id, account_balance):
-        """Met à jour l'affichage du compte et du solde."""
         # self.canvas.itemconfig(self.account_text_id, text=f"Compte Actuel: #{account_id}")
         self.canvas.itemconfig(self.balance_amount_id, text=f"{float(account_balance):.2f} €")
 
     def validate_amount(self, amount_str):
-        """Valide que le montant est un nombre positif."""
         if not amount_str:
             messagebox.showerror("Erreur", "Veuillez entrer un montant.")
             return False
 
-        # Remplacer la virgule par un point si nécessaire
         amount_str = amount_str.replace(',', '.')
 
         try:
@@ -414,7 +392,6 @@ class DashboardTransactions(ctk.CTkFrame):
         
         
     def refresh_accounts_dropdown(self):
-        """Rafraîchit la liste déroulante des comptes avec les soldes actualisés."""
         try:
             db = mysql.connector.connect(
                 host="localhost",
@@ -424,7 +401,6 @@ class DashboardTransactions(ctk.CTkFrame):
             )
             cursor = db.cursor(dictionary=True)
             
-            # Récupérer les comptes bancaires de l'utilisateur
             cursor.execute("SELECT id, account_balance FROM bank_account WHERE id_user = %s", (self.user_id,))
             accounts = cursor.fetchall()
             
@@ -432,10 +408,8 @@ class DashboardTransactions(ctk.CTkFrame):
             db.close()
             
             if accounts:
-                # Sauvegarder le compte actuellement sélectionné
                 current_selected_id = self.selected_account_id
                 
-                # Mettre à jour la liste déroulante avec les comptes actualisés
                 account_menu = self.account_dropdown["menu"]
                 account_menu.delete(0, "end")
                 self.account_options = {}
@@ -450,7 +424,6 @@ class DashboardTransactions(ctk.CTkFrame):
                         command=lambda txt=display_text: self.on_account_selected(txt)
                     )
                 
-                # Retrouver et sélectionner le compte qui était précédemment sélectionné
                 for display_text, (acc_id, acc_balance) in self.account_options.items():
                     if acc_id == current_selected_id:
                         self.account_var.set(display_text)
@@ -461,7 +434,6 @@ class DashboardTransactions(ctk.CTkFrame):
             messagebox.showerror("Erreur", f"Impossible de rafraîchir la liste des comptes: {err}")
 
     def make_deposit(self):
-        """Effectue un dépôt sur le compte sélectionné."""
         if not self.selected_account_id:
             messagebox.showerror("Erreur", "Aucun compte sélectionné.")
             return
@@ -479,13 +451,11 @@ class DashboardTransactions(ctk.CTkFrame):
             )
             cursor = db.cursor()
 
-            # Mettre à jour le solde du compte
             cursor.execute(
                 "UPDATE bank_account SET account_balance = account_balance + %s WHERE id = %s",
                 (amount, self.selected_account_id)
             )
 
-            # Enregistrer la transaction
             now = datetime.now()
             reference = f"DEP{now.strftime('%Y%m%d%H%M%S')}"
             cursor.execute(
@@ -496,14 +466,12 @@ class DashboardTransactions(ctk.CTkFrame):
 
             db.commit()
 
-            # Récupérer le nouveau solde
             cursor.execute("SELECT account_balance FROM bank_account WHERE id = %s", (self.selected_account_id,))
             new_balance = cursor.fetchone()[0]
 
             cursor.close()
             db.close() 
             
-            # Mettre à jour l'affichage
             self.update_account_display(self.selected_account_id, new_balance)
             self.entry_deposit.delete(0, 'end')
             messagebox.showinfo("Succès", f"Dépôt de {amount:.2f}€ effectué avec succès.")
@@ -514,7 +482,6 @@ class DashboardTransactions(ctk.CTkFrame):
             messagebox.showerror("Erreur", f"Impossible d'effectuer le dépôt: {err}")
 
     def make_withdrawal(self):
-        """Effectue un retrait sur le compte sélectionné."""
         if not self.selected_account_id:
             messagebox.showerror("Erreur", "Aucun compte sélectionné.")
             return
@@ -532,7 +499,6 @@ class DashboardTransactions(ctk.CTkFrame):
             )
             cursor = db.cursor()
 
-            # Vérifier si le solde est suffisant
             cursor.execute("SELECT account_balance FROM bank_account WHERE id = %s", (self.selected_account_id,))
             current_balance = cursor.fetchone()[0]
 
@@ -542,13 +508,11 @@ class DashboardTransactions(ctk.CTkFrame):
                 db.close()
                 return
 
-            # Mettre à jour le solde du compte (retrait = montant négatif)
             cursor.execute(
                 "UPDATE bank_account SET account_balance = account_balance - %s WHERE id = %s",
                 (amount, self.selected_account_id)
             )
 
-            # Enregistrer la transaction avec montant négatif
             now = datetime.now()
             reference = f"WDR{now.strftime('%Y%m%d%H%M%S')}"
             cursor.execute(
@@ -559,14 +523,12 @@ class DashboardTransactions(ctk.CTkFrame):
 
             db.commit()
 
-            # Récupérer le nouveau solde
             cursor.execute("SELECT account_balance FROM bank_account WHERE id = %s", (self.selected_account_id,))
             new_balance = cursor.fetchone()[0]
 
             cursor.close()
             db.close()
 
-            # Mettre à jour l'affichage
             self.update_account_display(self.selected_account_id, new_balance)
             self.entry_withdraw.delete(0, 'end')
             messagebox.showinfo("Succès", f"Retrait de {amount:.2f}€ effectué avec succès.")
@@ -577,17 +539,14 @@ class DashboardTransactions(ctk.CTkFrame):
             messagebox.showerror("Erreur", f"Impossible d'effectuer le retrait: {err}")
 
     def make_transfer(self):
-        """Effectue un virement vers un autre compte."""
         if not self.selected_account_id:
             messagebox.showerror("Erreur", "Aucun compte source sélectionné.")
             return
 
-        # Valider le montant
         amount = self.validate_amount(self.entry_transfer_amount.get())
         if not amount:
             return
 
-        # Valider le compte de destination
         dest_account_str = self.entry_transfer_to.get().strip()
         if not dest_account_str:
             messagebox.showerror("Erreur", "Veuillez entrer un numéro de compte de destination.")
@@ -599,7 +558,6 @@ class DashboardTransactions(ctk.CTkFrame):
             messagebox.showerror("Erreur", "Le numéro de compte de destination doit être un nombre.")
             return
 
-        # Vérifier que le compte de destination n'est pas le même que le compte source
         if dest_account_id == self.selected_account_id:
             messagebox.showerror("Erreur", "Impossible de faire un virement vers le même compte.")
             return
@@ -613,7 +571,6 @@ class DashboardTransactions(ctk.CTkFrame):
             )
             cursor = db.cursor()
 
-            # Vérifier si le compte de destination existe
             cursor.execute("SELECT id FROM bank_account WHERE id = %s", (dest_account_id,))
             if not cursor.fetchone():
                 messagebox.showerror("Erreur", "Le compte de destination n'existe pas.")
@@ -621,7 +578,6 @@ class DashboardTransactions(ctk.CTkFrame):
                 db.close()
                 return
 
-            # Vérifier si le solde du compte source est suffisant
             cursor.execute("SELECT account_balance FROM bank_account WHERE id = %s", (self.selected_account_id,))
             current_balance = cursor.fetchone()[0]
 
@@ -631,19 +587,16 @@ class DashboardTransactions(ctk.CTkFrame):
                 db.close()
                 return
 
-            # Débiter le compte source
             cursor.execute(
                 "UPDATE bank_account SET account_balance = account_balance - %s WHERE id = %s",
                 (amount, self.selected_account_id)
             )
 
-            # Créditer le compte de destination
             cursor.execute(
                 "UPDATE bank_account SET account_balance = account_balance + %s WHERE id = %s",
                 (amount, dest_account_id)
             )
 
-            # Enregistrer la transaction pour le compte source (montant négatif)
             now = datetime.now()
             reference = f"TRF{now.strftime('%Y%m%d%H%M%S')}"
             cursor.execute(
@@ -652,7 +605,6 @@ class DashboardTransactions(ctk.CTkFrame):
                 (reference, f"Virement vers compte #{dest_account_id}", -amount, now, "transfer", self.user_id, self.selected_account_id)
             )
 
-            # Enregistrer la transaction pour le compte de destination (montant positif)
             cursor.execute(
                 "INSERT INTO bank_transaction (reference, description, amount, date, transaction_type, id_user, id_bank_account) "
                 "VALUES (%s, %s, %s, %s, %s, %s, %s)",
@@ -661,14 +613,12 @@ class DashboardTransactions(ctk.CTkFrame):
 
             db.commit()
 
-            # Récupérer le nouveau solde du compte source
             cursor.execute("SELECT account_balance FROM bank_account WHERE id = %s", (self.selected_account_id,))
             new_balance = cursor.fetchone()[0]
 
             cursor.close()
             db.close()
 
-            # Mettre à jour l'affichage
             self.update_account_display(self.selected_account_id, new_balance)
             self.entry_transfer_amount.delete(0, 'end')
             self.entry_transfer_to.delete(0, 'end')
@@ -680,7 +630,6 @@ class DashboardTransactions(ctk.CTkFrame):
             messagebox.showerror("Erreur", f"Impossible d'effectuer le virement: {err}")
 
     def on_account_selected(self, selection):
-        """Gère la sélection d'un compte dans la liste déroulante"""
         if selection in self.account_options:
             account_id, account_balance = self.account_options[selection]
             self.selected_account_id = account_id
@@ -689,34 +638,17 @@ class DashboardTransactions(ctk.CTkFrame):
             self.account_var.set(selection)
     
     def on_home(self):
-        """Retourne à la page d'accueil."""
         if hasattr(self.master, "show_dashboard"):
             self.master.show_dashboard(self.user_id)
 
     def on_charts(self):
-        """Accède à la page des graphiques."""
         if hasattr(self.master, "show_dashboard_charts"):
             self.master.show_dashboard_charts(self.user_id)
 
     def on_logout(self):
-        """Déconnecte l'utilisateur et retourne à la page de connexion."""
         if hasattr(self.master, "show_login_page"):
             self.master.show_login_page()
 
 
-# # Pour tester la page individuellement
-# if __name__ == "__main__":
-#     import tkinter as tk
-    
-#     root = tk.Tk()
-#     root.geometry("1280x720")
-#     root.title("Budget Buddy - Transactions")
-    
-#     # ID utilisateur de test
-#     test_user_id = 1  # Remplacez par un ID valide dans votre base de données
-    
-#     # Créer et afficher la page de transactions
-#     transactions_page = DashboardTransactions(root, test_user_id)
-#     transactions_page.pack(fill="both", expand=True)
-    
+
 #     root.mainloop()

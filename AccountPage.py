@@ -48,7 +48,6 @@ class AccountPage(ctk.CTkFrame):
             font=("Dune_Rise", -64)
         )
 
-        # Bouton "Créer un compte bancaire"
         self.button_image_1 = PhotoImage(file=self.relative_to_assets("button_1.png"))
         self.button_1 = Button(
             self,
@@ -61,7 +60,6 @@ class AccountPage(ctk.CTkFrame):
         )
         self.button_1.place(x=298.0, y=308.0, width=289.0, height=85.0)
 
-        # Bouton "Accéder au(x) compte(s)"
         self.button_image_2 = PhotoImage(file=self.relative_to_assets("button_2.png"))
         self.button_2 = Button(
             self,
@@ -80,11 +78,10 @@ class AccountPage(ctk.CTkFrame):
         Cette méthode crée un compte bancaire pour l'utilisateur connecté
         avec un solde initial spécifié par l'utilisateur.
         """
-        # Demander le solde initial à l'utilisateur
         initial_balance = simpledialog.askfloat("Solde initial", "Entrez le solde initial du compte:", 
                                                minvalue=0, initialvalue=0)
         
-        if initial_balance is None:  # L'utilisateur a annulé
+        if initial_balance is None:  
             return
             
         try:
@@ -95,7 +92,6 @@ class AccountPage(ctk.CTkFrame):
                 database="budget_buddy"
             )
             cursor = db.cursor()
-            # Insertion d'un nouveau compte bancaire avec le solde initial spécifié
             query = "INSERT INTO bank_account (account_balance, id_user) VALUES (%s, %s)"
             cursor.execute(query, (initial_balance, self.user_id))
             db.commit()
@@ -104,13 +100,11 @@ class AccountPage(ctk.CTkFrame):
             cursor.close()
             db.close()
             
-            # Rediriger vers le dashboard pour voir le nouveau compte
             self.access_bank_accounts()
             
         except mysql.connector.Error as err:
             messagebox.showerror("Erreur", f"Erreur lors de la création du compte bancaire: {err}")
         
     def access_bank_accounts(self):
-        # Redirige vers le dashboard
         if hasattr(self.master, "show_dashboard"):
             self.master.show_dashboard(self.user_id)

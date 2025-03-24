@@ -208,9 +208,7 @@ class LoginPage(ctk.CTkFrame):
         except mysql.connector.Error as err:
             messagebox.showerror("Erreur de base de données", f"Une erreur est survenue: {err}")
     
-    # Gestion des événements pour le texte d'inscription
     def on_register_text_click(self, event):
-        # Rediriger vers la page d'inscription
         self.master.show_register_page()
     
     def on_register_text_enter(self, event):
@@ -221,10 +219,8 @@ class LoginPage(ctk.CTkFrame):
         self.canvas.config(cursor="")
         self.canvas.itemconfig(self.register_text_id, fill="#FFFFFF")
     
-    # Gestion des événements pour le texte de mot de passe oublié
     def on_forgot_password_click(self, event):
         messagebox.showinfo("Information", "Fonctionnalité de récupération de mot de passe à venir.")
-        # Pour une implémentation future:
         # self.master.show_password_recovery_page()
     
     def on_forgot_password_enter(self, event):
@@ -237,27 +233,4 @@ class LoginPage(ctk.CTkFrame):
 
 
 
-# if __name__ == "__main__":
-#     # Créer une fenêtre principale
-#     class App(Tk):
-#         def __init__(self):
-#             super().__init__()
-#             self.title("Budget Buddy - Connexion")
-#             self.geometry("1280x720")
-#             self.resizable(False, False)
-            
-#             # Initialiser la page de connexion
-#             self.login_page = LoginPage(self)
-            
-#         def show_register_page(self):
-#             # Pour l'exemple, affiche simplement un message
-#             print("Redirection vers la page d'inscription")
-#             messagebox.showinfo("Navigation", "Redirection vers la page d'inscription")
-            
-#         def show_account_page(self, user_id):
-#             # Pour l'exemple, affiche simplement un message
-#             print(f"Redirection vers la page du compte utilisateur {user_id}")
-#             messagebox.showinfo("Navigation", f"Redirection vers la page du compte utilisateur {user_id}")
-
-#     app = App()
 #     app.mainloop()
